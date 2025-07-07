@@ -112,7 +112,6 @@
     <script>
         // Inicializar Socket.IO
         const socket = io();
-        
         // Elementos del DOM
         const statusDiv = document.getElementById('status');
         const usernameInput = document.getElementById('username');
@@ -147,6 +146,7 @@
             statusDiv.textContent = 'Conectado';
             statusDiv.className = 'connection-status connected';
             console.log('Conectado al servidor');
+            console.log('ID de conexión:', socket.id);
         });
         
         socket.on('disconnect', function() {
@@ -186,6 +186,12 @@
         });
         
         socket.on('receive_message', function(data) {
+            console.log('Mensaje recibido:', data);
+            addMessage(data);
+        });
+
+        socket.on('user_receive_message', function(data) {
+            console.log('Mensaje recibido por usuario:', data);
             addMessage(data);
         });
         

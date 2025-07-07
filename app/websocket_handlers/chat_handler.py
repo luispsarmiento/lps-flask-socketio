@@ -3,6 +3,10 @@ from flask import request
 from datetime import datetime
 
 def register_handlers(socketio):
+    @socketio.on('connect')
+    def handle_connect():
+        print('Usuario conectado:', request.sid)
+        emit('connection_status', {'status': 'Conectado', 'sid': request.sid})
     
     @socketio.on('join_chat')
     def handle_join_chat(data):
@@ -51,6 +55,20 @@ def register_handlers(socketio):
                 'message': message,
                 'timestamp': datetime.now().strftime('%H:%M:%S')
             }, room=room)
+
+    @socketio.on('send_message_to_user')
+    def handle_send_message_to_user(data):
+        username = data.get('username', 'Usuario')
+        message = data.get('message', '')
+        user_sid = data.get('to', None)
+        
+        if message.strip():
+            # Enviar mensaje a todos en la sala
+            emit('receive_message', {
+                'username': username,
+                'message': message,
+                'timestamp': datetime.now().strftime('%H:%M:%S')
+            }, to=user_sid)
     
     @socketio.on('typing')
     def handle_typing(data):
